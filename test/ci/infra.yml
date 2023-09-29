@@ -1,0 +1,24 @@
+namespace: "test-app"
+
+databases:
+  - type: "dynamodb"
+    tableName: "dev"
+    hashKeyName: "Id"
+    hashKeyType: "S"
+    readCapacity: 5
+    writeCapacity: 5
+
+  - type: "dynamodb"
+    tableName: "uat"
+    hashKeyName: "Id"
+    hashKeyType: "S"
+    readCapacity: 5
+    writeCapacity: 5
+
+  - type: "dynamodb"
+    tableName: "prod"
+    hashKeyName: "Id"
+    hashKeyType: "S"
+    readCapacity: 5
+    writeCapacity: 5
+

@@ -1,0 +1,18 @@
+{{ range .Databases }}
+{{ if eq .Type "dynamodb" }}
+
+resource "aws_dynamodb_table" "{{ .TableName }}" {
+  name           = "{{ .TableName }}"
+  hash_key       = "{{ .HashKeyName }}"
+  billing_mode   = "PROVISIONED"
+  read_capacity  = {{ .ReadCapacity }}
+  write_capacity = {{ .WriteCapacity }}
+
+  attribute {
+    name = "{{ .HashKeyName }}"
+    type = "{{ .HashKeyType }}"
+  }
+}
+
+{{ end }}
+{{ end }}

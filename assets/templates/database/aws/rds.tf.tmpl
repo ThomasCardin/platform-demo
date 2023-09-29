@@ -1,0 +1,16 @@
+{{ range .Databases }}
+
+resource "aws_db_instance" "{{ .DbName }}" {
+  allocated_storage    = {{ .AllocatedStorage }}
+  storage_type         = "gp2"
+  engine               = "{{ .Type }}"
+  engine_version       = "5.7"
+  instance_class       = "{{ .InstanceClass }}"
+  name                 = "{{ .DbName }}"
+  username             = "{{ .Username }}"
+  password             = "{{ .Password }}"
+  parameter_group_name = "default.mysql5.7"
+  skip_final_snapshot = true
+}
+
+{{ end }}
