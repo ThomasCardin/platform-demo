@@ -1,0 +1,9 @@
+resource "azurerm_sql_server" "sqlserver" {
+  name                         = "{{.Name}}"
+  resource_group_name          = "{{.ResourceGroupName}}"
+  location                     = "{{.Location}}"
+  version                      = "12.0"
+  administrator_login          = "{{.AdminLogin}}"
+  administrator_login_password = "{{.AdminPassword}}"
+}
+

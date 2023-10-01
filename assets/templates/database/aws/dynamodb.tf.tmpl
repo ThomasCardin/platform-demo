@@ -1,6 +1,3 @@
-{{ range .Databases }}
-{{ if eq .Type "dynamodb" }}
-
 resource "aws_dynamodb_table" "{{ .TableName }}" {
   name           = "{{ .TableName }}"
   hash_key       = "{{ .HashKeyName }}"
@@ -14,5 +11,3 @@ resource "aws_dynamodb_table" "{{ .TableName }}" {
   }
 }
 
-{{ end }}
-{{ end }}

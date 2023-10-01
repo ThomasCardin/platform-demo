@@ -1,0 +1,19 @@
+resource "azurerm_cosmosdb_account" "cosmosdb" {
+  name                = "{{.Name}}"
+  resource_group_name = "{{.ResourceGroupName}}"
+  location            = "{{.Location}}"
+  offer_type          = "Standard"
+  kind                = "GlobalDocumentDB"
+  
+  consistency_policy {
+    consistency_level       = "Session"
+    max_interval_in_seconds = 10
+    max_staleness_prefix    = 200
+  }
+
+  geo_location {
+    location          = "{{.Location}}"
+    failover_priority = 0
+  }
+}
+

@@ -1,0 +1,9 @@
+resource "google_bigtable_instance" "instance" {
+  name          = "{{.Name}}"
+  cluster_id    = "{{.ClusterID}}"
+  zone          = "{{.Zone}}"
+  num_nodes     = {{.NumNodes}}
+  storage_type  = "HDD"
+  display_name  = "{{.DisplayName}}"
+}
+
