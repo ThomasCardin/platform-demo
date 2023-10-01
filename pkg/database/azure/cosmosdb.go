@@ -9,6 +9,7 @@ import (
 )
 
 const (
+	COSMOSDB                         = "cosmosdb"
 	COSMOSDB_TERRAFORM_TEMPLATE_NAME = "cosmosdb.tf.tmpl"
 	COSMOSDB_TERRAFORM_TEMPLATE_PATH = "assets/templates/database/azure/cosmosdb.tf.tmpl"
 )

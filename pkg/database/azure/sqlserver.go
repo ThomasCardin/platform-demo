@@ -9,6 +9,7 @@ import (
 )
 
 const (
+	SQLSERVER                         = "sqlserver"
 	SQLSERVER_TERRAFORM_TEMPLATE_NAME = "sqlserver.tf.tmpl"
 	SQLSERVER_TERRAFORM_TEMPLATE_PATH = "assets/templates/database/azure/sqlserver.tf.tmpl"
 )

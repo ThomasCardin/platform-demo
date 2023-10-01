@@ -9,6 +9,7 @@ import (
 )
 
 const (
+	BIGTABLE                         = "bigtable"
 	BIGTABLE_TERRAFORM_TEMPLATE_NAME = "bigtable.tf.tmpl"
 	BIGTABLE_TERRAFORM_TEMPLATE_PATH = "assets/templates/database/gcp/bigtable.tf.tmpl"
 )

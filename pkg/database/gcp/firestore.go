@@ -9,6 +9,7 @@ import (
 )
 
 const (
+	FIRESTORE                         = "firestore"
 	FIRESTORE_TERRAFORM_TEMPLATE_NAME = "firestore.tf.tmpl"
 	FIRESTORE_TERRAFORM_TEMPLATE_PATH = "assets/templates/database/gcp/firestore.tf.tmpl"
 )

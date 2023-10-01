@@ -9,11 +9,12 @@ import (
 )
 
 const (
+	RDS                         = "rds"
 	RDS_TERRAFORM_TEMPLATE_NAME = "rds.tf.tmpl"
 	RDS_TERRAFORM_TEMPLATE_PATH = "assets/templates/database/aws/rds.tf.tmpl"
 )
 
-type RDS struct {
+type Rds struct {
 	DbName           string `yaml:"dbName"`
 	Username         string `yaml:"username"`
 	Password         string `yaml:"password"`
@@ -21,10 +22,10 @@ type RDS struct {
 	AllocatedStorage int    `yaml:"allocatedStorage"`
 }
 
-var _ database.Database = (*RDS)(nil)
+var _ database.Database = (*Rds)(nil)
 
-func (rds *RDS) Parse(data map[string]interface{}) {
-	*rds = RDS{
+func (rds *Rds) Parse(data map[string]interface{}) {
+	*rds = Rds{
 		DbName:           data["dbName"].(string),
 		Username:         data["username"].(string),
 		Password:         data["password"].(string),
@@ -33,7 +34,7 @@ func (rds *RDS) Parse(data map[string]interface{}) {
 	}
 }
 
-func (rds *RDS) ApplyToTerraform(outputFile *os.File) error {
+func (rds *Rds) ApplyToTerraform(outputFile *os.File) error {
 	tmpl, err := template.New(RDS_TERRAFORM_TEMPLATE_NAME).ParseFiles(RDS_TERRAFORM_TEMPLATE_PATH)
 	if err != nil {
 		log.Fatalf("error: %v", err)

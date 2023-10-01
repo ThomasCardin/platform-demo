@@ -37,11 +37,8 @@ func main() {
 		log.Fatalf("error: %v", err)
 	}
 
-	file := "infra-" + params.Namespace + ".tf"
+	// Create output directory and subdirectories + file.tf
 	namespace := filepath.Join("test", params.Namespace)
-	filePath := filepath.Join(namespace, file)
-
-	// Create output directory and subdirectories +
 	if _, err := os.Stat(namespace); os.IsNotExist(err) {
 		err := os.MkdirAll(namespace, 0755)
 		if err != nil {
@@ -53,6 +50,7 @@ func main() {
 	}
 
 	// This creates (or opens if exists) a single file to append all templates
+	filePath := filepath.Join(namespace, "infra-"+params.Namespace+".tf")
 	if _, err := os.Stat(filePath); err == nil {
 		if err := os.Remove(filePath); err != nil {
 			log.Fatalf("Error deleting file : %v", err)
@@ -67,37 +65,37 @@ func main() {
 
 	for dbType, dbDetails := range params.Databases {
 		switch dbType {
-		case "dynamodb":
+		case aws.DYNAMODB:
 			for _, instance := range dbDetails {
 				var dynamodb aws.DynamoDB
 				dynamodb.Parse(instance.(map[string]interface{}))
 				dynamodb.ApplyToTerraform(outputFile)
 			}
-		case "rds":
+		case aws.RDS:
 			for _, instance := range dbDetails {
-				var rds aws.RDS
+				var rds aws.Rds
 				rds.Parse(instance.(map[string]interface{}))
 				rds.ApplyToTerraform(outputFile)
 			}
-		case "sqlserver":
+		case azure.SQLSERVER:
 			for _, instance := range dbDetails {
 				var sqlserver azure.SQLServer
 				sqlserver.Parse(instance.(map[string]interface{}))
 				sqlserver.ApplyToTerraform(outputFile)
 			}
-		case "cosmosdb":
+		case azure.COSMOSDB:
 			for _, instance := range dbDetails {
 				var cosmosdb azure.CosmosDB
 				cosmosdb.Parse(instance.(map[string]interface{}))
 				cosmosdb.ApplyToTerraform(outputFile)
 			}
-		case "bigtable":
+		case gcp.BIGTABLE:
 			for _, instance := range dbDetails {
 				var bigtable gcp.Bigtable
 				bigtable.Parse(instance.(map[string]interface{}))
 				bigtable.ApplyToTerraform(outputFile)
 			}
-		case "firestore":
+		case gcp.FIRESTORE:
 			for _, instance := range dbDetails {
 				var firestore gcp.Firestore
 				firestore.Parse(instance.(map[string]interface{}))

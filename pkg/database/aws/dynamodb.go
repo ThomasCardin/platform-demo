@@ -9,6 +9,7 @@ import (
 )
 
 const (
+	DYNAMODB                         = "dynamodb"
 	DYNAMODB_TERRAFORM_TEMPLATE_NAME = "dynamodb.tf.tmpl"
 	DYNAMODB_TERRAFORM_TEMPLATE_PATH = "assets/templates/database/aws/dynamodb.tf.tmpl"
 )
