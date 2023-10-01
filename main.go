@@ -4,19 +4,29 @@ import (
 	"log"
 	"os"
 	"path/filepath"
-	"text/template"
 
-	"io/ioutil"
+	"github.com/ThomasCardin/ci-cd/pkg/database/aws"
+	"github.com/ThomasCardin/ci-cd/pkg/database/azure"
+	"github.com/ThomasCardin/ci-cd/pkg/database/gcp"
+	"gopkg.in/yaml.v3"
+)
 
-	"gopkg.in/yaml.v2"
+const (
+	PATH = "test/ci/infra.yml"
 )
 
 type Params struct {
-	Namespace string `yaml:"namespace"`
+	Namespace string                   `yaml:"namespace"`
+	Databases map[string][]interface{} `yaml:"databases"`
 }
 
+/*
+TODO: Add command line arguments
+-> For testing
+-> Trigger the creation of databases only, etc..
+*/
 func main() {
-	data, err := ioutil.ReadFile(filepath.Join("ci", "infra.yml"))
+	data, err := os.ReadFile(PATH)
 	if err != nil {
 		log.Fatalf("error: %v", err)
 	}
@@ -27,31 +37,72 @@ func main() {
 		log.Fatalf("error: %v", err)
 	}
 
-	projectName := params.ProjectName
-	if _, err := os.Stat(projectName); os.IsNotExist(err) {
-		err := os.MkdirAll(projectName, 0755)
+	file := "infra-" + params.Namespace + ".tf"
+	namespace := filepath.Join("test", params.Namespace)
+	filePath := filepath.Join(namespace, file)
+
+	// Create output directory and subdirectories +
+	if _, err := os.Stat(namespace); os.IsNotExist(err) {
+		err := os.MkdirAll(namespace, 0755)
 		if err != nil {
-			log.Fatalf("Erreur lors de la création du répertoire : %v", err)
+			log.Fatalf("Error creating directory : %s", err)
 		}
-		log.Printf("Répertoire %v créé avec succès.", projectName)
+		log.Printf("Directory created: %s", namespace)
 	} else {
-		log.Printf("Le répertoire %v existe déjà.", projectName)
+		log.Printf("Directory already exist: %s", namespace)
 	}
 
-	templatePath := filepath.Join("templates", "aws", "dynamodb.tf.tmpl")
-	tmpl, err := template.New(templatePath).ParseFiles(templatePath)
+	// This creates (or opens if exists) a single file to append all templates
+	if _, err := os.Stat(filePath); err == nil {
+		if err := os.Remove(filePath); err != nil {
+			log.Fatalf("Error deleting file : %v", err)
+		}
+	}
+
+	outputFile, err := os.OpenFile(filePath, os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0644)
 	if err != nil {
 		log.Fatalf("error: %v", err)
 	}
+	defer outputFile.Close()
 
-	file, err := os.Create(filepath.Join(projectName, "dynamodb.tf"))
-	if err != nil {
-		log.Fatalf("error: %v", err)
-	}
-	defer file.Close()
-
-	err = tmpl.Execute(file, params)
-	if err != nil {
-		log.Fatalf("error: %v", err)
+	for dbType, dbDetails := range params.Databases {
+		switch dbType {
+		case "dynamodb":
+			for _, instance := range dbDetails {
+				var dynamodb aws.DynamoDB
+				dynamodb.Parse(instance.(map[string]interface{}))
+				dynamodb.ApplyToTerraform(outputFile)
+			}
+		case "rds":
+			for _, instance := range dbDetails {
+				var rds aws.RDS
+				rds.Parse(instance.(map[string]interface{}))
+				rds.ApplyToTerraform(outputFile)
+			}
+		case "sqlserver":
+			for _, instance := range dbDetails {
+				var sqlserver azure.SQLServer
+				sqlserver.Parse(instance.(map[string]interface{}))
+				sqlserver.ApplyToTerraform(outputFile)
+			}
+		case "cosmosdb":
+			for _, instance := range dbDetails {
+				var cosmosdb azure.CosmosDB
+				cosmosdb.Parse(instance.(map[string]interface{}))
+				cosmosdb.ApplyToTerraform(outputFile)
+			}
+		case "bigtable":
+			for _, instance := range dbDetails {
+				var bigtable gcp.Bigtable
+				bigtable.Parse(instance.(map[string]interface{}))
+				bigtable.ApplyToTerraform(outputFile)
+			}
+		case "firestore":
+			for _, instance := range dbDetails {
+				var firestore gcp.Firestore
+				firestore.Parse(instance.(map[string]interface{}))
+				firestore.ApplyToTerraform(outputFile)
+			}
+		}
 	}
 }

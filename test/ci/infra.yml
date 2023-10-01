@@ -1,24 +1,33 @@
 namespace: "test-app"
 
 databases:
-  - type: "dynamodb"
-    tableName: "dev"
-    hashKeyName: "Id"
-    hashKeyType: "S"
-    readCapacity: 5
-    writeCapacity: 5
+  dynamodb:
+    - tableName: "uat"
+      hashKeyName: "Id"
+      hashKeyType: "S"
+      readCapacity: 5
+      writeCapacity: 5
 
-  - type: "dynamodb"
-    tableName: "uat"
-    hashKeyName: "Id"
-    hashKeyType: "S"
-    readCapacity: 5
-    writeCapacity: 5
+  cosmosdb:
+    - name: "myCosmosDB"
+      resourceGroupName: "myResourceGroup"
+      location: "East US"
 
-  - type: "dynamodb"
-    tableName: "prod"
-    hashKeyName: "Id"
-    hashKeyType: "S"
-    readCapacity: 5
-    writeCapacity: 5
+  sqlserver:
+    - name: "mySqlServer"
+      resourceGroupName: "myResourceGroup"
+      location: "East US"
+      adminLogin: "admin"
+      adminPassword: "password"
+
+  bigtable:
+    - name: "myBigtable"
+      clusterID: "myCluster"
+      zone: "us-central1-b"
+      numNodes: 3
+      displayName: "My Bigtable Instance"
+
+  firestore:
+    - projectID: "my-gcp-project"
+      location: "us-central"
 
