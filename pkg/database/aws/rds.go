@@ -1,7 +1,16 @@
 package aws
 
 import (
+	"log"
+	"os"
+	"text/template"
+
 	"github.com/ThomasCardin/ci-cd/pkg/database"
+)
+
+const (
+	RDS_TERRAFORM_TEMPLATE_NAME = "rds.tf.tmpl"
+	RDS_TERRAFORM_TEMPLATE_PATH = "assets/templates/database/aws/rds.tf.tmpl"
 )
 
 type RDS struct {
@@ -14,12 +23,27 @@ type RDS struct {
 
 var _ database.Database = (*RDS)(nil)
 
-func (rds *RDS) UnmarshalYAML(unmarshal func(interface{}) error) error {
-	type d RDS
-	aux := &d{}
-	if err := unmarshal(aux); err != nil {
-		return err
+func (rds *RDS) Parse(data map[string]interface{}) {
+	*rds = RDS{
+		DbName:           data["dbName"].(string),
+		Username:         data["username"].(string),
+		Password:         data["password"].(string),
+		InstanceClass:    data["instanceClass"].(string),
+		AllocatedStorage: int(data["allocatedStorage"].(int64)),
 	}
-	*rds = RDS(*aux)
+}
+
+func (rds *RDS) ApplyToTerraform(outputFile *os.File) error {
+	tmpl, err := template.New(RDS_TERRAFORM_TEMPLATE_NAME).ParseFiles(RDS_TERRAFORM_TEMPLATE_PATH)
+	if err != nil {
+		log.Fatalf("error: %v", err)
+	}
+
+	err = tmpl.Execute(outputFile, rds)
+	if err != nil {
+		log.Fatalf("error: %v", err)
+	}
+
+	log.Printf("Successfully applied RDS to Terraform")
 	return nil
 }
